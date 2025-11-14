@@ -5,22 +5,26 @@
     box-sizing: border-box;
 }
 
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    height: 100vh;
+    background: linear-gradient(135deg, #f97316 0%, #fcd34d 50%, #3b82f6 100%); /* CAM → VÀNG → XANH DƯƠNG */
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 0;
-    overflow: hidden; 
 }
 
-/* --- MAIN LAYOUT CONTAINER (MỚI) --- */
+/* --- MAIN LAYOUT CONTAINER --- */
 .main-layout-container {
-    width: 100%;
+    width: 95vw;
+    height: 90vh;
     max-width: 1200px;
-    height: 95vh;
     max-height: 800px;
     background: #ffffff;
     border-radius: 20px;
@@ -29,14 +33,14 @@ body {
     overflow: hidden;
 }
 
-/* --- SIDEBAR (THANH MENU BÊN TRÁI) --- */
+/* --- SIDEBAR --- */
 .sidebar {
-    width: 280px; 
-    background: #f7f7f7; 
+    width: 280px;
+    background: #fff7ed; /* vàng nhạt */
     display: flex;
     flex-direction: column;
     padding: 15px 10px;
-    border-right: 1px solid #e2e8f0;
+    border-right: 1px solid #fde68a;
     transition: transform 0.3s ease-in-out;
     flex-shrink: 0;
     overflow-y: auto;
@@ -126,61 +130,67 @@ body {
     text-overflow: ellipsis;
 }
 
+
+.sidebar-header {
+    color: #c2410c; /* cam đậm */
+}
+
+.sidebar-item:hover, 
+.sidebar-item.active {
+    background: #fee2b3; /* vàng + cam nhạt */
+    color: #7c2d12;
+}
+
+.sidebar-item.new-chat {
+    background: #dbeafe;
+    font-weight: 600;
+}
+
+.sidebar-item.new-chat:hover {
+    background: #bfdbfe;
+}
+
 /* --- CHAT MAIN (PHẦN CHÍNH CỦA CHATBOT) --- */
 .chat-main {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-width: 0; /* Ngăn tràn ngang */
 }
 
 .chat-container {
     width: 100%;
-    max-width: 100%; 
     height: 100%;
-    max-height: 100%;
     background: #ffffff;
-    border-radius: 0; 
-    box-shadow: none; 
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
+
 .user-avatar-header {
-    width: 40px; /* Kích thước ảnh đại diện */
+    width: 40px;
     height: 40px;
-    border-radius: 50%; /* Để tạo hình tròn */
-    overflow: hidden; /* Đảm bảo ảnh bên trong được cắt tròn */
-    margin-left: auto; /* Đẩy avatar sang phải */
-    border: 2px solid white; /* Viền trắng */
+    border-radius: 50%;
+    overflow: hidden;
+    margin-left: auto;
+    border: 2px solid white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .user-avatar-header img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Đảm bảo ảnh vừa vặn và không bị méo */
-}
-
-/* Điều chỉnh lại khoảng cách nếu cần cho chat-header */
-.chat-header {
-    /* ... các thuộc tính hiện có ... */
-    justify-content: space-between; /* Đảm bảo bot-avatar và user-avatar-header nằm ở hai đầu */
-}
-
-/* Đảm bảo menu-toggle không bị ảnh hưởng trên màn hình lớn */
-@media (min-width: 901px) {
-    .sidebar-header .menu-toggle {
-        display: none; /* Ẩn nút menu trên màn hình lớn */
-    }
+    object-fit: cover;
 }
 
 .chat-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #f97316 0%, #fbbf24 50%, #2563eb 100%); /* CAM → VÀNG → XANH */
     color: white;
     padding: 20px 25px;
     display: flex;
     align-items: center;
     gap: 15px;
+    justify-content: space-between;
 }
 
 .bot-avatar {
@@ -193,6 +203,7 @@ body {
     justify-content: center;
     font-size: 24px;
     flex-shrink: 0;
+    color: #f97316;
 }
 
 .header-info {
@@ -283,7 +294,7 @@ body {
 }
 
 .message.bot .message-avatar {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%); /* xanh dương */
     color: white;
 }
 
@@ -464,6 +475,10 @@ body {
 
 /* --- Responsive Design --- */
 @media (max-width: 900px) {
+    body {
+        align-items: stretch;
+    }
+
     .sidebar {
         position: absolute;
         height: 100%;
@@ -481,6 +496,8 @@ body {
         max-height: 100vh;
         height: 100vh;
         max-width: 100vw;
+        width: 100vw;
+        box-shadow: none;
     }
 
     .chat-messages {

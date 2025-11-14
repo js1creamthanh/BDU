@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import './AIUI.css'
+
 // Định nghĩa kiểu dữ liệu cho Tin nhắn
 interface Message {
     id: number;
@@ -7,23 +8,24 @@ interface Message {
     isUser: boolean;
     time: string;
 }
+
 // Map các câu trả lời của Bot
 const responses: { [key: string]: string } = {
-    'tell me a joke': "Why don't scientists trust atoms? Because they make up everything! 😄",
-    'what can you do': "I can chat with you, answer questions, tell jokes, and help with various tasks. Just ask me anything!",
-    'help me with coding': "I'd be happy to help with coding! What programming language or concept would you like assistance with?",
-    'hello': "Hi there! How are you doing today?",
-    'hi': "Hello! What can I do for you?",
-    'how are you': "I'm doing great, thank you for asking! How about you?",
-    'bye': "Goodbye! Have a wonderful day!",
-    'thanks': "You're welcome! Feel free to ask if you need anything else.",
-    'default': "That's interesting! I'm here to help. Could you tell me more?"
+    'kể chuyện cười': "Tại sao các nhà khoa học không tin vào nguyên tử? Vì chúng tạo ra mọi thứ mà! 😄",
+    'bạn có thể làm gì': "Mình có thể trò chuyện, trả lời câu hỏi, kể chuyện cười, và giúp bạn với nhiều công việc khác. Hãy hỏi mình bất cứ điều gì nhé!",
+    'giúp tôi lập trình': "Rất sẵn lòng! Bạn muốn mình giúp về ngôn ngữ lập trình hay khái niệm nào?",
+    'xin chào': "Chào bạn! Hôm nay bạn thế nào?",
+    'chào': "Chào bạn! Mình là BDU.CM BOT, bạn cần hỗ trợ gì không?",
+    'bạn khỏe không': "Mình ổn lắm, cảm ơn bạn! Còn bạn thì sao?",
+    'tạm biệt': "Tạm biệt nhé! Chúc bạn một ngày thật tuyệt vời!",
+    'cảm ơn': "Không có gì đâu! Nếu bạn cần thêm gì, cứ nói với mình nhé.",
+    'default': "Thật thú vị đó! Bạn có thể nói rõ hơn được không?"
 };
 
 // Hàm lấy thời gian hiện tại
 const getCurrentTime = (): string => {
     const now = new Date();
-    return now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    return now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
 };
 
 // Component con: Hiển thị Tin nhắn
@@ -37,26 +39,24 @@ const MessageComponent: React.FC<{ message: Message }> = ({ message }) => (
     </div>
 );
 
-// Component chính: UIAI
+// Component chính: BDU.CM BOT
 const UIAI: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([
         { 
             id: 0, 
-            text: "Hello! I'm your AI assistant. How can I help you today?", 
+            text: "Xin chào! Mình là BDU.CM BOT. Mình có thể giúp gì cho bạn hôm nay?", 
             isUser: false, 
-            time: "Just now" 
+            time: "Vừa xong" 
         }
     ]);
     const [inputValue, setInputValue] = useState('');
     const [isTyping, setIsTyping] = useState(false);
-    // Logic cho Sidebar trên di động
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    
-    // Ref để cuộn tin nhắn
+
     const chatMessagesRef = useRef<HTMLDivElement>(null);
     const messageInputRef = useRef<HTMLTextAreaElement>(null);
 
-    // Logic lấy phản hồi của bot
+    // Lấy phản hồi từ bot
     const getBotResponse = (userMessage: string): string => {
         const msg = userMessage.toLowerCase().trim();
         for (const [key, value] of Object.entries(responses)) {
@@ -67,12 +67,11 @@ const UIAI: React.FC = () => {
         return responses.default;
     };
 
-    // Hàm gửi tin nhắn
+    // Gửi tin nhắn
     const sendMessage = useCallback((messageToSend: string) => {
         const message = messageToSend.trim();
         if (message === '' || isTyping) return;
 
-        // 1. Thêm tin nhắn người dùng
         setMessages(prev => [
             ...prev,
             { 
@@ -82,12 +81,10 @@ const UIAI: React.FC = () => {
                 time: getCurrentTime() 
             }
         ]);
-        setInputValue(''); // Xóa nội dung input
+        setInputValue('');
 
-        // 2. Hiện trạng thái đang gõ
         setIsTyping(true);
 
-        // 3. Giả lập phản hồi của bot sau 1-2 giây
         setTimeout(() => {
             const responseText = getBotResponse(message);
             
@@ -104,21 +101,20 @@ const UIAI: React.FC = () => {
         }, 1000 + Math.random() * 1000); 
     }, [isTyping]);
 
-    // Xử lý sự kiện Enter
+    // Enter để gửi
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             sendMessage(inputValue);
         }
     };
-    
-    // Xử lý nút Quick Replies
+
+    // Quick Reply
     const handleQuickReply = (replyText: string) => {
-        // Cần truyền trực tiếp vào sendMessage vì logic hiện tại của bạn là gửi ngay lập tức
         sendMessage(replyText); 
     };
 
-    // Tự động điều chỉnh chiều cao textarea (Tái tạo logic JS)
+    // Tự động thay đổi chiều cao textarea
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputValue(e.target.value);
         if (messageInputRef.current) {
@@ -127,15 +123,14 @@ const UIAI: React.FC = () => {
         }
     };
 
-    // Cuộn tin nhắn tự động khi có tin nhắn mới hoặc trạng thái typing thay đổi
+    // Tự động cuộn khi có tin nhắn mới
     useEffect(() => {
         if (chatMessagesRef.current) {
             chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
         }
     }, [messages, isTyping]);
     
-    // Quick Replies
-    const quickReplies = ["Tell me a joke", "What can you do?", "Help me with coding"];
+    const quickReplies = ["Kể chuyện cười", "Bạn có thể làm gì?", "Giúp tôi lập trình"];
 
     return (
         <div className="main-layout-container">
@@ -157,22 +152,21 @@ const UIAI: React.FC = () => {
                     </a>
                     <a href="#" className="sidebar-item discover-gem">
                         <span className="icon">💎</span>
-                        <span className="text">Khám phá Gem</span>
+                        <span className="text">Khám phá nội dung</span>
                     </a>
                 </div>
 
                 <div className="sidebar-section">
                     <div className="section-title">Gần đây</div>
                     <div className="recent-chats">
-                        {/* Thay thế bằng danh sách trò chuyện thực tế */}
                         <a href="#" className="sidebar-item recent-chat active">
-                            <span className="text">  </span>
+                            <span className="text">  </span>
                         </a>
                         <a href="#" className="sidebar-item recent-chat">
-                            <span className="text">  </span>
+                            <span className="text">  </span>
                         </a>
                         <a href="#" className="sidebar-item recent-chat">
-                            <span className="text">  </span>
+                            <span className="text">  </span>
                         </a>
                     </div>
                 </div>
@@ -191,15 +185,14 @@ const UIAI: React.FC = () => {
                     <div className="chat-header">
                         <div className="bot-avatar">🤖</div>
                         <div className="header-info">
-                            <div className="bot-name">AI Assistant</div>
+                            <div className="bot-name">BDU.CM BOT</div>
                             <div className="bot-status">
                                 <span className="status-dot"></span>
-                                <span>Online</span>
+                                <span>Đang hoạt động</span>
                             </div>
                         </div>
                         <div className="user-avatar-header">
-                            {/* Chú ý: Placeholder image URL có thể cần thay đổi nếu không dùng placeholder.com */}
-                            <img src="https://via.placeholder.com/40/FF6347/FFFFFF?text=ME" alt="User Avatar" />
+                            <img src="https://via.placeholder.com/40/0078D7/FFFFFF?text=BDU-er" alt="User Avatar" />
                         </div>
                     </div>
 
@@ -208,7 +201,6 @@ const UIAI: React.FC = () => {
                             <MessageComponent key={msg.id} message={msg} />
                         ))}
                         
-                        {/* Hiển thị Typing Indicator */}
                         {isTyping && (
                             <div className="typing-indicator" id="typingIndicator">
                                 <div className="message-avatar">🤖</div>
@@ -237,7 +229,7 @@ const UIAI: React.FC = () => {
                             <div className="input-field">
                                 <textarea 
                                     id="messageInput" 
-                                    placeholder="Type your message..." 
+                                    placeholder="Nhập tin nhắn của bạn..." 
                                     rows={1}
                                     value={inputValue}
                                     onChange={handleInputChange}
