@@ -3,6 +3,14 @@ import styled, { keyframes, createGlobalStyle } from 'styled-components';
 import { FiLogIn } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
+const provider = new GoogleAuthProvider();
+
+
+const auth = getAuth();
+
+
 
 // --- 1. Global Styles ---
 const GlobalStyle = createGlobalStyle`
@@ -111,20 +119,29 @@ const LoginScreen: React.FC = () => {
   const navigate = useNavigate(); // Hook điều hướng
 
   const handleLoginClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // 1. Hiệu ứng ripple
-    const button = event.currentTarget;
-    const rect = button.getBoundingClientRect();
-    setRipplePos({
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top,
-    });
-    setTimeout(() => setRipplePos(null), 600);
-
-    // 2. Giả lập đăng nhập, sau đó chuyển hướng sang AIUI
-    console.log('Đang đăng nhập...');
-    setTimeout(() => {
-      navigate('/aiui');
-    }, 700);
+signInWithPopup(auth, provider)
+  .then((result) => {
+    // This gives you a Google Access Token. You can use it to access the Google API.
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    if (credential == null){
+      console.log ("Đại bị khùng");
+      return;
+    }
+    const token = credential.accessToken;
+    // The signed-in user info.
+    const user = result.user;
+    // IdP data available using getAdditionalUserInfo(result)
+    // ...
+  }).catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    const credential = GoogleAuthProvider.credentialFromError(error);
+    // ...
+  });
   };
 
   return (
